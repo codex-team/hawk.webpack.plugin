@@ -1,4 +1,7 @@
 const fs = require('fs');
+const FormData = require('form-data');
+const https = require('https');
+const http = require('http');
 
 /**
  * @typedef {import("webpack/lib/Compiler")} Compiler
@@ -19,6 +22,7 @@ class HawkWebpackPlugin {
   constructor({integrationToken}) {
     this.collectorEndpoint = 'http://localhost:3000/sourcemap'
     this.integrationToken = integrationToken
+    this.isHttps = false
   }
 
 
@@ -98,29 +102,55 @@ class HawkWebpackPlugin {
    * @return {Promise<Response>}
    */
   sendOne(map, releaseId){
-    const body = new FormData
-    body.append('file', "@main.min.js.map")
-    body.append('release', releaseId)
+    return this.loadSourceMapFile(map.path)
+      .then(file => {
+        const body = new FormData();
 
-    console.log(`Sending map [${map.name}] ...`)
+        body.append('file', file)
+        body.append('release', releaseId)
 
-    return fetch(this.collectorEndpoint, {
-      body,
-      headers: {
-        Authorization: `Bearer ${this.integrationToken}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then(response => {
-      console.log('(⌐■_■) Hawk Collector Response: ', response)
-    }).catch(error => {
-      console.log('ლ(´ڡ`ლ) Error while sending Source Map.', error)
-    })
+        console.log(`Sending map [${map.name}] ...`)
+
+        return this.fetch(body).then(response => {
+          console.log('(⌐■_■) Hawk Collector Response: ', response)
+        }).catch(error => {
+          console.log('ლ(´ڡ`ლ) Error while sending Source Map.', error)
+        })
+      })
+
+
+  }
+
+  fetch(data){
+    return new Promise(((resolve, reject) => {
+      const lib = this.isHttps ? https : http;
+      const request = lib.request(this.collectorEndpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.integrationToken}`,
+          ...data.getHeaders()
+        }
+      }, (response) => {
+        response.setEncoding('utf8');
+        response.on('data', function (chunk) {
+          console.log('Response: ' + chunk)
+          resolve(chunk);
+        });
+      });
+
+      request.on('error', (e) => {
+        reject(e)
+      });
+
+      request.write(data.getBuffer());
+      request.end();
+    }))
   }
 
   /**
    * Load file content
    * @param {string} path - file path
-   * @return {Promise<Buffer>}
+   * @return {Promise<Blob>}
    */
   loadSourceMapFile(path){
     return new Promise((resolve, reject) => {
