@@ -23,8 +23,8 @@ class HawkWebpackPlugin {
     this.collectorEndpoint = 'http://localhost:3000/sourcemap'
     this.integrationToken = integrationToken
     this.isHttps = false
+    console.log(' ')
   }
-
 
   /**
    * This method is called once by the webpack compiler while installing the plugin.
@@ -47,8 +47,21 @@ class HawkWebpackPlugin {
             return
           }
 
+          const timerLabel = '🕊   Hawk Webpack Plugin'
+
+          console.time(timerLabel)
           this.sendSourceMaps(sourceMaps, releaseId)
-            .then(resolve)
+            .then(() => {
+                resolve()
+            })
+            .then(() => {
+              setTimeout(() => {
+                console.timeEnd(timerLabel)
+                console.log('RESOLVE');
+
+              }, 5000)
+
+            })
         }
       ))
     });
@@ -109,12 +122,12 @@ class HawkWebpackPlugin {
         body.append('file', file)
         body.append('release', releaseId)
 
-        console.log(`Sending map [${map.name}] ...`)
+        this.log(`Sending map [${map.name}] ...`)
 
         return this.fetch(body).then(response => {
-          console.log('(⌐■_■) Hawk Collector Response: ', response)
+          this.log('(⌐■_■) Hawk Collector Response: ', response)
         }).catch(error => {
-          console.log('ლ(´ڡ`ლ) Error while sending Source Map.', error)
+          this.log('ლ(´ڡ`ლ) Error while sending the source map: ' + error.message)
         })
       })
 
@@ -133,7 +146,6 @@ class HawkWebpackPlugin {
       }, (response) => {
         response.setEncoding('utf8');
         response.on('data', function (chunk) {
-          console.log('Response: ' + chunk)
           resolve(chunk);
         });
       });
@@ -163,6 +175,10 @@ class HawkWebpackPlugin {
         resolve(data);
       });
     })
+  }
+
+  log(message){
+    console.log('\x1b[36m%s\x1b[0m', '🦅 [Hawk] ' + message + '\n');
   }
 }
 

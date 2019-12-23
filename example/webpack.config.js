@@ -1,9 +1,12 @@
 const HawkWebpackPlugin = require('../src/index');
+const dotenv = require('dotenv');
+
+dotenv.config()
 
 module.exports = {
   plugins: [
     new HawkWebpackPlugin({
-      integrationToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0SWQiOiI1ZGYwYTFmZjkyMmRjYjAxMDM3YmMwYzkiLCJpYXQiOjE1NzYwNTExOTl9.4wOKwQ1z_tujBhazdR-UQjIOcKGZ2I_q2fbffYwQ9gw'
+      integrationToken: process.env.HAWK_TOKEN
     })
   ],
   devtool: 'hidden-source-map',
