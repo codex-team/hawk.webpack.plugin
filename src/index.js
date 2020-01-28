@@ -23,6 +23,7 @@ class HawkWebpackPlugin {
     this.collectorEndpoint = 'http://localhost:3000/sourcemap'
     this.integrationToken = integrationToken
     this.isHttps = false
+    this.requestTimeout = 50
     console.log(' ')
   }
 
@@ -55,12 +56,7 @@ class HawkWebpackPlugin {
                 resolve()
             })
             .then(() => {
-              setTimeout(() => {
-                console.timeEnd(timerLabel)
-                console.log('RESOLVE');
-
-              }, 5000)
-
+              console.timeEnd(timerLabel)
             })
         }
       ))
@@ -122,30 +118,36 @@ class HawkWebpackPlugin {
         body.append('file', file)
         body.append('release', releaseId)
 
-        this.log(`Sending map [${map.name}] ...`)
+        // this.log(`Sending map [${map.name}] ...`)
 
         return this.fetch(body).then(response => {
           this.log('(⌐■_■) Hawk Collector Response: ', response)
         }).catch(error => {
-          this.log('ლ(´ڡ`ლ) Error while sending the source map: ' + error.message)
+          this.log('ლ(´ڡ`ლ) Error while sending the source map: ' + error.message, consoleColors.fgRed)
         })
       })
 
 
   }
 
+  /**
+   * Performs XHR request
+   * @param {FormData} data - send FormData to the server
+   * @return {Promise<string>}
+   */
   fetch(data){
     return new Promise(((resolve, reject) => {
       const lib = this.isHttps ? https : http;
       const request = lib.request(this.collectorEndpoint, {
         method: 'POST',
+        timeout: this.requestTimeout,
         headers: {
           Authorization: `Bearer ${this.integrationToken}`,
           ...data.getHeaders()
         }
       }, (response) => {
         response.setEncoding('utf8');
-        response.on('data', function (chunk) {
+        response.on('data', (chunk) => {
           resolve(chunk);
         });
       });
@@ -177,9 +179,22 @@ class HawkWebpackPlugin {
     })
   }
 
-  log(message){
-    console.log('\x1b[36m%s\x1b[0m', '🦅 [Hawk] ' + message + '\n');
+  /**
+   * Decorates terminal log
+   * @param {string} message - message to print
+   * @param {string} [color] - message color
+   */
+  log(message, color = consoleColors.fgCyan){
+    console.log('\x1b[' + color + 'm%s\x1b[0m', '🦅 [Hawk] ' + message + '\n');
   }
+}
+
+/**
+ * Terminal output colors
+ */
+const consoleColors = {
+  fgCyan: 36,
+  fgRed: 31,
 }
 
 module.exports = HawkWebpackPlugin;
