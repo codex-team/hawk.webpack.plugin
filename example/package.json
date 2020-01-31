@@ -1,0 +1,19 @@
+{
+  "name": "@hawk/wepack-plugin-example",
+  "version": "0.0.1",
+  "description": "This package demonstrates how to connect and use the Hawk Webpack Plugin",
+  "main": "src/index.js",
+  "author": "CodeX <team@codex.so>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  }
+}

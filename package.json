@@ -1,0 +1,16 @@
+{
+  "name": "@hawk/wepkack-plugin",
+  "version": "0.0.1",
+  "description": "Webpack plugin for sending source-maps to the Hawk",
+  "main": "src/index.js",
+  "repository": "https://github.com/codex-team/hawk.webpack.plugin.git",
+  "author": "CodeX <team@codex.so>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "webpack": "^4.41.4"
+  },
+  "dependencies": {
+    "form-data": "^3.0.0"
+  }
+}
