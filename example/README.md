@@ -11,7 +11,7 @@ Then, get it in node process through the [dotenv](https://github.com/motdotla/do
 
 ```js
 //  webpack.config.js
-const HawkWebpackPlugin = require('../src/index');
+const HawkWebpackPlugin = require('@hawk.so/webpack-plugin');
 const dotenv = require('dotenv');
 
 dotenv.config()
