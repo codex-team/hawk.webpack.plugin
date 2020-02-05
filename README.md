@@ -4,7 +4,7 @@ Webpack plugin for sending source maps to the Hawk.
 ## Install 
 
 ```
-yarn add @hawk.so/wepkack-plugin --save-dev
+yarn add @hawk.so/webpack-plugin --save-dev
 ```
 
 ## Connect
