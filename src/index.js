@@ -20,7 +20,7 @@ class HawkWebpackPlugin {
   /**
    * @param {string} integrationToken - Integration Token got from the Project Settings page
    * @param {string} release - Unique id of current build
-   * @param {string|false} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
+   * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    */
   constructor({integrationToken, release, releaseInfoFile}) {
     this.collectorEndpoint = 'http://localhost:3000/sourcemap'
