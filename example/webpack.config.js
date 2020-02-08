@@ -6,7 +6,7 @@ dotenv.config()
 module.exports = {
   plugins: [
     new HawkWebpackPlugin({
-      integrationToken: process.env.HAWK_TOKEN
+      integrationToken: process.env.HAWK_TOKEN,
     })
   ],
   devtool: 'hidden-source-map',
