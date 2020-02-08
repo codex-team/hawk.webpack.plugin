@@ -25,3 +25,6 @@ module.exports = {
   devtool: 'hidden-source-map',
 }
 ```
+
+The release id is not specified manually, so the plugin will use webpack compilation hash. 
+We'll access it through the `release.json` file, that will be created at the output directory.

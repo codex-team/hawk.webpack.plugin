@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const FormData = require('form-data');
 const https = require('https');
 const http = require('http');
@@ -18,10 +19,14 @@ const http = require('http');
 class HawkWebpackPlugin {
   /**
    * @param {string} integrationToken - Integration Token got from the Project Settings page
+   * @param {string} release - Unique id of current build
+   * @param {string|false} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    */
-  constructor({integrationToken}) {
+  constructor({integrationToken, release, releaseInfoFile}) {
     this.collectorEndpoint = 'http://localhost:3000/sourcemap'
     this.integrationToken = integrationToken
+    this.releaseId = release
+    this.releaseInfoFile = releaseInfoFile
     this.isHttps = false
     this.requestTimeout = 50
     console.log(' ')
@@ -40,7 +45,13 @@ class HawkWebpackPlugin {
        */
       (compilation) => {
         return new Promise(((resolve, reject) => {
-          const releaseId = this.getReleaseId(compilation)
+          /**
+           * If there is no release identifier passed from user, get webpack compilation hash
+           */
+          if (!this.releaseId){
+            this.releaseId = this.getReleaseId(compilation)
+          }
+
           const sourceMaps = this.findSourceMaps(compilation)
 
           if (!sourceMaps.length){
@@ -51,9 +62,23 @@ class HawkWebpackPlugin {
           const timerLabel = '🕊   Hawk Webpack Plugin'
 
           console.time(timerLabel)
-          this.sendSourceMaps(sourceMaps, releaseId)
+          this.sendSourceMaps(sourceMaps, this.releaseId)
             .then(() => {
-                resolve()
+              /**
+               * Save release info to the release.json file
+               */
+              if (this.releaseInfoFile !== false){
+                /**
+                 * If release info path does not specified, use the webpack's output directory
+                 */
+                this.releaseInfoFile = this.releaseInfoFile || compilation.outputOptions.path;
+                this.saveReleaseId();
+              }
+
+              /**
+               * Continue webpack building
+               */
+              resolve()
             })
             .then(() => {
               console.timeEnd(timerLabel)
@@ -121,9 +146,20 @@ class HawkWebpackPlugin {
         // this.log(`Sending map [${map.name}] ...`)
 
         return this.fetch(body).then(response => {
-          this.log('(⌐■_■) Hawk Collector Response: ', response)
+          try {
+            response = JSON.parse(response);
+
+            if (response && response.error === false){
+              this.log(map.name + ' – ' + wrapInColor('sent', consoleColors.fgGreen), consoleColors.fgCyan, true)
+            } else {
+              this.log(map.name + ' – ' + wrapInColor('failed: ' + response.message, consoleColors.fgRed), consoleColors.fgCyan, true)
+            }
+
+          } catch (error) {
+            this.log('(⌐■_■) Hawk Collector Unparsed response: ', response)
+          }
         }).catch(error => {
-          this.log('ლ(´ڡ`ლ) Error while sending the source map: ' + error.message, consoleColors.fgRed)
+          this.log(map.name + ' – ' + wrapInColor('ლ(´ڡ`ლ) sending failed: ' + error.message, consoleColors.fgRed), consoleColors.fgCyan, true)
         })
       })
 
@@ -180,13 +216,38 @@ class HawkWebpackPlugin {
   }
 
   /**
+   * Saves current release identifier to the release.json file
+   */
+  saveReleaseId(){
+    const releaseInfoFilename = 'release.json';
+    const fullPath = path.join(this.releaseInfoFile, releaseInfoFilename);
+
+    fs.writeFileSync(fullPath, JSON.stringify({
+      release: this.releaseId,
+      date: Date.now()
+    }));
+
+    this.log(`release information saved to the ${fullPath}`)
+  }
+
+  /**
    * Decorates terminal log
    * @param {string} message - message to print
    * @param {string} [color] - message color
+   * @param {boolean} [skipLineBreak] - pass true to prevent adding an empty linebreak
    */
-  log(message, color = consoleColors.fgCyan){
-    console.log('\x1b[' + color + 'm%s\x1b[0m', '🦅 [Hawk] ' + message + '\n');
+  log(message, color = consoleColors.fgCyan, skipLineBreak = false){
+    console.log(wrapInColor('🦅 Hawk | ' + message + (!skipLineBreak ? '\n' : ''), color));
   }
+}
+
+/**
+ * Set a terminal color to the message
+ * @param {string} msg - text to wrap
+ * @param {string} color - color
+ */
+function wrapInColor(msg, color) {
+  return '\x1b[' + color + 'm' + msg + '\x1b[0m';
 }
 
 /**
@@ -195,6 +256,7 @@ class HawkWebpackPlugin {
 const consoleColors = {
   fgCyan: 36,
   fgRed: 31,
+  fgGreen: 32,
 }
 
 module.exports = HawkWebpackPlugin;
