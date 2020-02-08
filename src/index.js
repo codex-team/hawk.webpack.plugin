@@ -140,7 +140,9 @@ class HawkWebpackPlugin {
       .then(file => {
         const body = new FormData();
 
-        body.append('file', file)
+        body.append('file', file, {
+          filename: map.name
+        })
         body.append('release', releaseId)
 
         // this.log(`Sending map [${map.name}] ...`)
