@@ -23,11 +23,11 @@ class HawkWebpackPlugin {
    * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    */
   constructor({integrationToken, release, releaseInfoFile}) {
-    this.collectorEndpoint = 'http://localhost:3000/sourcemap'
+    this.collectorEndpoint = 'https://kepler.codex.so/sourcemap'
     this.integrationToken = integrationToken
     this.releaseId = release
     this.releaseInfoFile = releaseInfoFile
-    this.isHttps = false
+    this.isHttps = true
     this.requestTimeout = 50
     console.log(' ')
   }
@@ -158,7 +158,7 @@ class HawkWebpackPlugin {
             }
 
           } catch (error) {
-            this.log('(⌐■_■) Hawk Collector Unparsed response: ', response)
+            this.log('(⌐■_■) Hawk Collector Unparsed response: \n\n' + response, consoleColors.fgRed)
           }
         }).catch(error => {
           this.log(map.name + ' – ' + wrapInColor('ლ(´ڡ`ლ) sending failed: ' + error.message, consoleColors.fgRed), consoleColors.fgCyan, true)
