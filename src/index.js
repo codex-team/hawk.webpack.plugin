@@ -23,7 +23,7 @@ class HawkWebpackPlugin {
    * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    */
   constructor({integrationToken, release, releaseInfoFile}) {
-    this.collectorEndpoint = 'https://kepler.codex.so/sourcemap'
+    this.collectorEndpoint = 'https://catcher.hawk.so/sourcemap'
     this.integrationToken = integrationToken
     this.releaseId = release
     this.releaseInfoFile = releaseInfoFile
