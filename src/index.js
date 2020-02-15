@@ -83,6 +83,11 @@ class HawkWebpackPlugin {
             .then(() => {
               console.timeEnd(timerLabel)
             })
+            .catch((error) => {
+              this.log('(⌐■_■) Sending failed: \n\n' + error.message, consoleColors.fgRed)
+              console.timeEnd(timerLabel)
+              resolve();
+            })
         }
       ))
     });
@@ -164,7 +169,9 @@ class HawkWebpackPlugin {
           this.log(map.name + ' – ' + wrapInColor('ლ(´ڡ`ლ) sending failed: ' + error.message, consoleColors.fgRed), consoleColors.fgCyan, true)
         })
       })
-
+      .catch((error) => {
+        this.log('(⌐■_■) Sending ' + map.name +' failed: \n\n' + error.message, consoleColors.fgRed)
+      })
 
   }
 
