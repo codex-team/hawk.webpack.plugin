@@ -1,6 +1,6 @@
 {
   "name": "@hawk.so/webpack-plugin",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Webpack plugin for sending source-maps to the Hawk",
   "main": "src/index.js",
   "repository": "https://github.com/codex-team/hawk.webpack.plugin.git",
