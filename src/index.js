@@ -21,13 +21,14 @@ class HawkWebpackPlugin {
    * @param {string} integrationToken - Integration Token got from the Project Settings page
    * @param {string} release - Unique id of current build
    * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
+   * @param {string} [collectorEndpoint] - Custom collector endpoint for debug
    */
-  constructor({integrationToken, release, releaseInfoFile}) {
-    this.collectorEndpoint = 'https://catcher.hawk.so/sourcemap'
+  constructor({integrationToken, release, releaseInfoFile, collectorEndpoint = ''}) {
+    this.collectorEndpoint = collectorEndpoint || 'https://catcher.hawk.so/sourcemap'
     this.integrationToken = integrationToken
     this.releaseId = release
     this.releaseInfoFile = releaseInfoFile
-    this.isHttps = true
+    this.isHttps = this.collectorEndpoint.startsWith('https');
     this.requestTimeout = 50
     console.log(' ')
   }
