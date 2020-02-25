@@ -24,7 +24,7 @@ class HawkWebpackPlugin {
    * @param {string} [collectorEndpoint] - Custom collector endpoint for debug
    */
   constructor({integrationToken, release, releaseInfoFile, collectorEndpoint = ''}) {
-    this.collectorEndpoint = collectorEndpoint || 'https://collector.hawk.so/sourcemap'
+    this.collectorEndpoint = collectorEndpoint || 'https://k1.hawk.so/sourcemap'
     this.integrationToken = integrationToken
     this.releaseId = release
     this.releaseInfoFile = releaseInfoFile
