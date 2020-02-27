@@ -257,7 +257,7 @@ class HawkWebpackPlugin {
   deleteSourceMaps(sourceMaps){
     sourceMaps.forEach(({name, path}) => {
       fs.unlinkSync(path)
-      this.log(`Map ${name} deleted`)
+      this.log(`Map ${name} deleted`, consoleColors.fgCyan,true)
     })
   }
 
