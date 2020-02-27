@@ -22,14 +22,16 @@ class HawkWebpackPlugin {
    * @param {string} release - Unique id of current build
    * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    * @param {string} [collectorEndpoint] - Custom collector endpoint for debug
+   * @param {boolean} [removeSourceMaps] - Should the plugin to remove emitted source map files. Default is `true`.
    */
-  constructor({integrationToken, release, releaseInfoFile, collectorEndpoint = ''}) {
+  constructor({integrationToken, release, releaseInfoFile, collectorEndpoint = '', removeSourceMaps = true}) {
     this.collectorEndpoint = collectorEndpoint || 'https://k1.hawk.so/sourcemap'
     this.integrationToken = integrationToken
     this.releaseId = release
     this.releaseInfoFile = releaseInfoFile
     this.isHttps = this.collectorEndpoint.startsWith('https');
     this.requestTimeout = 50
+    this.removeSourceMaps = removeSourceMaps
     console.log(' ')
   }
 
@@ -73,7 +75,14 @@ class HawkWebpackPlugin {
                  * If release info path does not specified, use the webpack's output directory
                  */
                 this.releaseInfoFile = this.releaseInfoFile || compilation.outputOptions.path;
-                this.saveReleaseId();
+                this.saveReleaseId()
+              }
+
+              /**
+               * Remove source maps
+               */
+              if (this.removeSourceMaps){
+                this.deleteSourceMaps(sourceMaps)
               }
 
               /**
@@ -87,7 +96,7 @@ class HawkWebpackPlugin {
             .catch((error) => {
               this.log('(⌐■_■) Sending failed: \n\n' + error.message, consoleColors.fgRed)
               console.timeEnd(timerLabel)
-              resolve();
+              resolve()
             })
         }
       ))
@@ -238,6 +247,18 @@ class HawkWebpackPlugin {
     }));
 
     this.log(`release information saved to the ${fullPath}`)
+  }
+
+  /**
+   * Removes source map files
+   * @param {SourceMapFound[]} sourceMaps - found .map files
+   * @return {void}
+   */
+  deleteSourceMaps(sourceMaps){
+    sourceMaps.forEach(({name, path}) => {
+      fs.unlinkSync(path)
+      this.log(`Map ${name} deleted`)
+    })
   }
 
   /**
