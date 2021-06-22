@@ -25,7 +25,7 @@ class HawkWebpackPlugin {
    * @param {boolean} [removeSourceMaps] - Should the plugin to remove emitted source map files. Default is `true`.
    */
   constructor({integrationToken, release, releaseInfoFile, collectorEndpoint = '', removeSourceMaps = true}) {
-    this.collectorEndpoint = collectorEndpoint || 'https://k1.hawk.so/sourcemap'
+    this.collectorEndpoint = collectorEndpoint || 'https://k1.hawk.so/release'
     this.integrationToken = integrationToken
     this.releaseId = release
     this.releaseInfoFile = releaseInfoFile
@@ -157,8 +157,9 @@ class HawkWebpackPlugin {
 
         body.append('file', file, {
           filename: map.name
-        })
-        body.append('release', releaseId)
+        });
+        body.append('release', releaseId);
+        body.append('commits', []);
 
         // this.log(`Sending map [${map.name}] ...`)
 
