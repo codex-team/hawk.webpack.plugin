@@ -32,11 +32,29 @@ Plugin options:
 | option | required | description | 
 | -- | -- | -- |
 | `integrationToken` | **yes** | Your project's Integration Token | 
-| `release` | no | Unique identifier of the release. By default it will be Webpack's compilation hash. You **should** pass this identifier to the [Javascript Catcher](https://github.com/codex-team/hawk.javascript) on initialization through the `release` option |
+| `release` | no | Unique identifier of the release. By default, it will be Webpack compilation hash. You **should** pass this identifier to the [Javascript Catcher](https://github.com/codex-team/hawk.javascript) on initialization through the `release` option |
 | `releaseInfoFile` | no | The path where `release.json` file will be created. By default, it will be got from Webpack `output.path` option. You can pass `false` to prevent creation of this file (can be useful, if you store and pass release id manually) |
 | `removeSourceMaps` | no | Should the plugin to remove emitted source map files. Default is `true`. |
 
 After plugin finish its work, it will save release information to the `release.json` file. 
 You can use this file to get `release` identifier and pass it to the JavaScript Catcher on initialization. 
 
-See [example](/example/) of connection. 
+See [example](/example) of connection. 
+
+## Usage in React project
+
+If you want to send source maps of your React project, you need to use [react-app-rewired](https://github.com/timarney/react-app-rewired) or do `yarn eject`. Then you can override Webpack config of your project and use this plugin.
+
+## Troubleshooting
+
+### `The "path" argument must be of type string or an instance of Buffer or URL. Received undefined`
+
+In Webpack 4 you need to add this property to your config:
+```js
+module.exports = {
+  // Webpack configuration
+  output: {
+    futureEmitAssets: false
+  }
+}
+```
