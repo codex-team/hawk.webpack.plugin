@@ -15,11 +15,15 @@ const gitlog = require("gitlog").default;
  * @property {string} path - full path from the system root
  */
 /**
- * @typedef {object} Commits
+ * @typedef {object} Commit
  * @property {string} hash - full commit hash
  * @property {stirng} title - commit title
  * @property {string} author - autho email
  * @property {string} date - date in string format
+ * 
+ * @typedef {object} GitOptions
+ * @property {string} repo - path to repository with .git directory
+ * @property {number} number - the number of commits we want to get
  */
 /**
  * Plugin provides sending of Source Map to the Hawk
@@ -31,6 +35,7 @@ class HawkWebpackPlugin {
    * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    * @param {string} [collectorEndpoint] - Custom collector endpoint for debug
    * @param {boolean} [removeSourceMaps] - Should the plugin to remove emitted source map files. Default is `true`.
+   * @param {GitOptions | boolean} commits - Git options for getting the commits
    */
   constructor({
     integrationToken, 
@@ -38,8 +43,7 @@ class HawkWebpackPlugin {
     releaseInfoFile, 
     collectorEndpoint = '', 
     removeSourceMaps = true,
-    getCommits = false,
-    gitOptions,
+    commits,
   }) {
     this.collectorEndpoint = collectorEndpoint || 'http://localhost:3000/release';
     this.integrationToken = integrationToken;
@@ -48,12 +52,11 @@ class HawkWebpackPlugin {
     this.isHttps = this.collectorEndpoint.startsWith('https');
     this.requestTimeout = 50;
     this.removeSourceMaps = removeSourceMaps;
-    this.getCommits = getCommits;
-    this.gitOptions = {
+    this.commits = typeof commits === 'object' ? {
       repo: __dirname,
       number: 10,
-      ...gitOptions,
-    };
+      ...commits
+    } : false;
   }
 
   /**
@@ -155,12 +158,12 @@ class HawkWebpackPlugin {
 
   /**
    * Find commits in the project directory
-   * @return {Commits[]}
+   * @return {Commit[]}
    */
   findCommits() {
     const options = {
-      repo: this.gitOptions.repo,
-      number: this.gitOptions.number,
+      repo: this.commits.repo,
+      number: this.commits.number,
       fields: ["hash", "subject", "authorEmail", "authorDate"],
     }
 
@@ -202,7 +205,7 @@ class HawkWebpackPlugin {
         });
         body.append('release', releaseId);
 
-        if (this.getCommits) {
+        if (this.commits) {
           try {
             const commits = this.findCommits() || [];
 
@@ -212,8 +215,6 @@ class HawkWebpackPlugin {
           }
           
         }
-
-        // this.log(`Sending map [${map.name}] ...`)
 
         return this.fetch(body).then(response => {
           try {
