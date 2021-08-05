@@ -35,12 +35,12 @@ Plugin options:
 | `release` | no | Unique identifier of the release. By default it will be Webpack's compilation hash. You **should** pass this identifier to the [Javascript Catcher](https://github.com/codex-team/hawk.javascript) on initialization through the `release` option |
 | `releaseInfoFile` | no | The path where `release.json` file will be created. By default, it will be got from Webpack `output.path` option. You can pass `false` to prevent creation of this file (can be useful, if you store and pass release id manually) |
 | `removeSourceMaps` | no | Should the plugin to remove emitted source map files. Default is `true`. |
-| `commits` | no | Object with options for getting the commits. Also can can be `false` for not getting them |
+| `commits` | no | Object with options for getting the commits. Also can can be `false`. |
 
 | Commits options | type | description |
 | -- | -- | -- |
-| `repo` | `string` | Path to repository with `.git` directory. Default is `__dirname` |
-| `number` | `number` | Max number of commits. Default is `10` |
+| `repo` | `string` | Path to repository with `.git` directory. Default is `__dirname`. |
+| `number` | `number` | Max number of commits. Default is `10`. |
 
 After plugin finish its work, it will save release information to the `release.json` file. 
 You can use this file to get `release` identifier and pass it to the JavaScript Catcher on initialization. 
