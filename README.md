@@ -44,17 +44,3 @@ See [example](/example) of connection.
 ## Usage in React project
 
 If you want to send source maps of your React project, you need to use [react-app-rewired](https://github.com/timarney/react-app-rewired) or do `yarn eject`. Then you can override Webpack config of your project and use this plugin.
-
-## Troubleshooting
-
-### `The "path" argument must be of type string or an instance of Buffer or URL. Received undefined`
-
-In Webpack 4 you need to add this property to your config:
-```js
-module.exports = {
-  // Webpack configuration
-  output: {
-    futureEmitAssets: false
-  }
-}
-```
