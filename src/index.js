@@ -119,12 +119,13 @@ class HawkWebpackPlugin {
    */
   findSourceMaps(compilation){
     const maps = [];
+    const outputPath = compilation.outputOptions.path;
 
     Object.keys(compilation.assets).forEach(name => {
       if (name.split('.').pop() === 'map'){
         maps.push({
           name,
-          path: compilation.assets[name].existsAt
+          path: path.join(outputPath, name),
         })
       }
     })
