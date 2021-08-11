@@ -52,7 +52,7 @@ class HawkWebpackPlugin {
     this.isHttps = this.collectorEndpoint.startsWith('https');
     this.requestTimeout = 50;
     this.removeSourceMaps = removeSourceMaps;
-    this.commits = typeof commits === 'object' ? {
+    this.commits = typeof commits !== 'boolean' ? {
       repo: __dirname,
       number: 10,
       ...commits
