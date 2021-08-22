@@ -210,10 +210,11 @@ class HawkWebpackPlugin {
             const commits = this.findCommits() || [];
 
             body.append('commits', JSON.stringify(commits));
+
+            this.log('Founded commits: ' + wrapInColor(commits.length, consoleColors.fgGreen), consoleColors.fgCyan, true)
           } catch (e) {
-            this.log("(⌐■_■) Couldn't get commits:" + e, consoleColors.fgRed);
+            this.log("(⌐■_■) Couldn't get commits: " + e, consoleColors.fgRed);
           }
-          
         }
 
         return this.fetch(body).then(response => {
