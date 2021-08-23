@@ -1,6 +1,6 @@
 {
   "name": "@hawk.so/webpack-plugin",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Webpack plugin for sending source-maps to the Hawk",
   "main": "src/index.js",
   "repository": "https://github.com/codex-team/hawk.webpack.plugin.git",
@@ -11,6 +11,7 @@
     "webpack": "^4.41.4"
   },
   "dependencies": {
-    "form-data": "^3.0.0"
+    "form-data": "^3.0.0",
+    "gitlog": "^4.0.4"
   }
 }

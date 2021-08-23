@@ -3,6 +3,7 @@ const path = require('path');
 const FormData = require('form-data');
 const https = require('https');
 const http = require('http');
+const gitlog = require("gitlog").default;
 
 /**
  * @typedef {import("webpack/lib/Compiler")} Compiler
@@ -14,6 +15,17 @@ const http = require('http');
  * @property {string} path - full path from the system root
  */
 /**
+ * @typedef {object} Commit
+ * @property {string} hash - full commit hash
+ * @property {stirng} title - commit title
+ * @property {string} author - autho email
+ * @property {string} date - date in string format
+ * 
+ * @typedef {object} GitOptions
+ * @property {string} repo - path to repository with .git directory
+ * @property {number} number - the number of commits we want to get
+ */
+/**
  * Plugin provides sending of Source Map to the Hawk
  */
 class HawkWebpackPlugin {
@@ -23,16 +35,28 @@ class HawkWebpackPlugin {
    * @param {string|boolean} releaseInfoFile - Pass where `release.json` file will be created. If false passed, file won't be created
    * @param {string} [collectorEndpoint] - Custom collector endpoint for debug
    * @param {boolean} [removeSourceMaps] - Should the plugin to remove emitted source map files. Default is `true`.
+   * @param {GitOptions | boolean} commits - Git options for getting the commits
    */
-  constructor({integrationToken, release, releaseInfoFile, collectorEndpoint = '', removeSourceMaps = true}) {
-    this.collectorEndpoint = collectorEndpoint || 'https://k1.hawk.so/release'
-    this.integrationToken = integrationToken
-    this.releaseId = release
-    this.releaseInfoFile = releaseInfoFile
+  constructor({
+    integrationToken, 
+    release, 
+    releaseInfoFile, 
+    collectorEndpoint = '', 
+    removeSourceMaps = true,
+    commits,
+  }) {
+    this.collectorEndpoint = collectorEndpoint || 'http://localhost:3000/release';
+    this.integrationToken = integrationToken;
+    this.releaseId = release;
+    this.releaseInfoFile = releaseInfoFile;
     this.isHttps = this.collectorEndpoint.startsWith('https');
-    this.requestTimeout = 50
-    this.removeSourceMaps = removeSourceMaps
-    console.log(' ')
+    this.requestTimeout = 50;
+    this.removeSourceMaps = removeSourceMaps;
+    this.commits = typeof commits !== 'boolean' ? {
+      repo: __dirname,
+      number: 10,
+      ...commits
+    } : false;
   }
 
   /**
@@ -134,6 +158,27 @@ class HawkWebpackPlugin {
   }
 
   /**
+   * Find commits in the project directory
+   * @return {Commit[]}
+   */
+  findCommits() {
+    const options = {
+      repo: this.commits.repo,
+      number: this.commits.number,
+      fields: ["hash", "subject", "authorEmail", "authorDate"],
+    }
+
+    const commits = gitlog(options);
+
+    return commits.map(commit => ({
+      hash: commit.hash,
+      title: commit.subject,
+      author: commit.authorEmail,
+      date: commit.authorDate,
+    }));
+  }
+
+  /**
    * Deliver found source maps to the Hawk Collector
    *
    * @param {SourceMapFound[]} maps - found source maps list
@@ -160,9 +205,18 @@ class HawkWebpackPlugin {
           filename: map.name
         });
         body.append('release', releaseId);
-        body.append('commits', []);
 
-        // this.log(`Sending map [${map.name}] ...`)
+        if (this.commits) {
+          try {
+            const commits = this.findCommits() || [];
+
+            body.append('commits', JSON.stringify(commits));
+
+            this.log('Founded commits: ' + wrapInColor(commits.length, consoleColors.fgGreen), consoleColors.fgCyan, true)
+          } catch (e) {
+            this.log("(⌐■_■) Couldn't get commits: " + e, consoleColors.fgRed);
+          }
+        }
 
         return this.fetch(body).then(response => {
           try {
