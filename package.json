@@ -1,13 +1,18 @@
 {
   "name": "@hawk.so/webpack-plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Webpack plugin for sending source-maps to the Hawk",
   "main": "src/index.js",
   "repository": "https://github.com/codex-team/hawk.webpack.plugin.git",
   "author": "CodeX <team@codex.so>",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "lint": "eslint src/ --ext .js --fix"
+  },
   "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-codex": "^1.6.4",
     "webpack": "^4.41.4"
   },
   "dependencies": {
