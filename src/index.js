@@ -157,7 +157,6 @@ class HawkWebpackPlugin {
     const decodedIntegrationTokenAsString = Buffer
       .from(this.integrationToken, 'base64')
       .toString('utf-8');
-    console.log(decodedIntegrationTokenAsString);
     const decodedIntegrationToken = JSON.parse(decodedIntegrationTokenAsString);
     const integrationId = decodedIntegrationToken.integrationId;
 
