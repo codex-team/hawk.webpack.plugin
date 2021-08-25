@@ -213,7 +213,7 @@ class HawkWebpackPlugin {
     body.append('release', releaseId);
 
     try {
-      const commits = this.findCommits() || [];
+      const commits = this.findCommits();
 
       body.append('commits', JSON.stringify(commits));
 
