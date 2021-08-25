@@ -17,7 +17,7 @@ const gitlog = require('gitlog').default;
 /**
  * @typedef {object} Commit
  * @property {string} hash - full commit hash
- * @property {stirng} title - commit title
+ * @property {string} title - commit title
  * @property {string} author - autho email
  * @property {string} date - date in string format
  *
@@ -45,13 +45,14 @@ class HawkWebpackPlugin {
     removeSourceMaps = true,
     commits = true,
   }) {
-    this.collectorEndpoint = collectorEndpoint || 'http://localhost:3000/release';
-    this.integrationToken = integrationToken;
     this.releaseId = release;
     this.releaseInfoFile = releaseInfoFile;
-    this.isHttps = this.collectorEndpoint.startsWith('https');
     this.requestTimeout = 50;
     this.removeSourceMaps = removeSourceMaps;
+
+    this.integrationToken = integrationToken;
+    this.collectorEndpoint = collectorEndpoint || `https://${this.getIntegrationId()}.k1.hawk.so/release`;
+    this.isHttps = this.collectorEndpoint.startsWith('https');
 
     this.commits = false;
 
@@ -104,7 +105,7 @@ class HawkWebpackPlugin {
               .catch((error) => {
                 this.log('(⌐■_■) Sending failed: \n\n' + error.message, consoleColors.fgRed);
               });
-            
+
             tasks.push(sendingCommits);
           }
 
@@ -141,10 +142,30 @@ class HawkWebpackPlugin {
              * Continue webpack building
              */
             resolve();
-          })
+          });
         }
         );
       });
+  }
+
+  /**
+   * Returns integration id from integration token
+   *
+   * @returns {string}
+   */
+  getIntegrationId() {
+    const decodedIntegrationTokenAsString = Buffer
+      .from(this.integrationToken, 'base64')
+      .toString('utf-8');
+    console.log(decodedIntegrationTokenAsString);
+    const decodedIntegrationToken = JSON.parse(decodedIntegrationTokenAsString);
+    const integrationId = decodedIntegrationToken.integrationId;
+
+    if (!integrationId || integrationId === '') {
+      throw new Error('Invalid integration token. There is no integration ID.');
+    }
+
+    return integrationId;
   }
 
   /**
@@ -172,7 +193,7 @@ class HawkWebpackPlugin {
         maps.push({
           name,
           path: path.join(outputPath, name),
-        })
+        });
       }
     });
 
@@ -343,17 +364,17 @@ class HawkWebpackPlugin {
 
   /**
    * Promise.allSettled polyfil
-   * 
+   *
    * @param {Promise[]} promises - array of promises to settle
    * @returns {Promise}
    */
   promiseAllSettled(promises) {
     return Promise.all(promises.map(p => Promise.resolve(p).then(value => ({
       status: 'fulfilled',
-      value: value
+      value: value,
     }), error => ({
       status: 'rejected',
-      reason: error
+      reason: error,
     }))));
   };
 
