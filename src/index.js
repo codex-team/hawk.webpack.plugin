@@ -51,7 +51,9 @@ class HawkWebpackPlugin {
     this.removeSourceMaps = removeSourceMaps;
 
     this.integrationToken = integrationToken;
-    this.collectorEndpoint = collectorEndpoint || `https://${this.getIntegrationId()}.k1.hawk.so/release`;
+    this.integrationId = this.getIntegrationId();
+
+    this.collectorEndpoint = collectorEndpoint || `https://${this.integrationId}.k1.hawk.so/release`;
     this.isHttps = this.collectorEndpoint.startsWith('https');
 
     this.commits = false;
@@ -79,6 +81,16 @@ class HawkWebpackPlugin {
        */
       (compilation) => {
         return new Promise((resolve, reject) => {
+          /**
+           * If there is not integration ID, stop Webpack plugin
+           */
+          if (!this.integrationId || this.integrationId === '') {
+            console.error('Invalid Integration Token passed.');
+            resolve();
+
+            return;
+          }
+
           /**
            * If there is no release identifier passed from user, get webpack compilation hash
            */
@@ -154,17 +166,21 @@ class HawkWebpackPlugin {
    * @returns {string}
    */
   getIntegrationId() {
-    const decodedIntegrationTokenAsString = Buffer
-      .from(this.integrationToken, 'base64')
-      .toString('utf-8');
-    const decodedIntegrationToken = JSON.parse(decodedIntegrationTokenAsString);
-    const integrationId = decodedIntegrationToken.integrationId;
+    try {
+      const decodedIntegrationTokenAsString = Buffer
+        .from(this.integrationToken, 'base64')
+        .toString('utf-8');
+      const decodedIntegrationToken = JSON.parse(decodedIntegrationTokenAsString);
+      const integrationId = decodedIntegrationToken.integrationId;
 
-    if (!integrationId || integrationId === '') {
-      throw new Error('Invalid integration token. There is no integration ID.');
+      if (!integrationId || integrationId === '') {
+        throw new Error('Invalid Integration Token');
+      }
+
+      return integrationId;
+    } catch (error) {
+      console.error('Invalid Integration token');
     }
-
-    return integrationId;
   }
 
   /**
