@@ -85,7 +85,7 @@ class HawkWebpackPlugin {
            * If there is not integration ID, stop Webpack plugin
            */
           if (!this.integrationId || this.integrationId === '') {
-            console.error('Integration ID from token is empty. Please, check your integration token.');
+            console.error('Invalid Integration Token passed.');
             resolve();
 
             return;
@@ -174,12 +174,12 @@ class HawkWebpackPlugin {
       const integrationId = decodedIntegrationToken.integrationId;
 
       if (!integrationId || integrationId === '') {
-        throw new Error('Invalid integration token. There is no integration ID.');
+        throw new Error('Invalid Integration Token');
       }
 
       return integrationId;
     } catch (error) {
-      console.error('Can\'t decode integration token:', error.message);
+      console.error('Invalid Integration token');
     }
   }
 
