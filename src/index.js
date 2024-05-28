@@ -204,7 +204,10 @@ class HawkWebpackPlugin {
     const outputPath = compilation.outputOptions.path;
 
     Object.keys(compilation.assets).forEach(name => {
-      if (name.split('.').pop() === 'map') {
+      const filename = name.split('?')[0];
+      const extension = filename.split('.').pop();
+
+      if (extension === 'map') {
         maps.push({
           name,
           path: path.join(outputPath, name),
