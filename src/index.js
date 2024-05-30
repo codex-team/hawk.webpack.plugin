@@ -210,7 +210,7 @@ class HawkWebpackPlugin {
       if (extension === 'map') {
         maps.push({
           name,
-          path: path.join(outputPath, name),
+          path: path.join(outputPath, filename),
         });
       }
     });
