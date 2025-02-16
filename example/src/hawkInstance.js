@@ -1,6 +1,9 @@
 import HawkCatcher from '@hawk.so/javascript';
 
 export const hawk = new HawkCatcher({
-  token: process.env.HAWK_TOKEN,
-  release: process.env.RELEASE,
+  /**
+   * Token and release would be replaced with actual values by webpack.definePlugin
+   */
+  token: HAWK_TOKEN,
+  release: RELEASE,
 });

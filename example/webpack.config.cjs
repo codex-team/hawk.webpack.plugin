@@ -22,10 +22,6 @@ module.exports = {
     new HawkWebpackPlugin({
       integrationToken: process.env.HAWK_TOKEN,
       release: releaseKey,
-      /**
-       * Custom collector endpoint for local development
-      */
-      // collectorEndpoint: 'http://localhost:3000/release',
     }),
     new webpack.DefinePlugin({
       'process.env.HAWK_TOKEN': JSON.stringify(process.env.HAWK_TOKEN),
