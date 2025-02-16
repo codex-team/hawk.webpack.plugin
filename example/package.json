@@ -8,7 +8,7 @@
   "private": false,
   "scripts": {
     "build": "webpack",
-    "serve": "webpack serve"
+    "serve": "serve -s dist"
   },
   "dependencies": {
     "@hawk.so/webpack-plugin": "^1.0.3",
