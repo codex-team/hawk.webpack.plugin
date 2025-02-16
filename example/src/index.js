@@ -2,18 +2,13 @@
  * This is an example of js-application
  * that will be bundled by Webpack with source map creation
  */
-import ModuleA from './moduleA';
-import ModuleB from './moduleB';
+import ErrorTrigger from './modules/ErrorTrigger';
+
+const errorTrigger = new ErrorTrigger();
 
 /**
- * Sample class constructor
+ * Example of a simple js application, that triggers console and hawk message on button click
  */
-export default class SampleApplication {
-  /**
-   * Sample app constructor
-   */
-  constructor() {
-    this.moduleA = new ModuleA();
-    this.moduleB = new ModuleB();
-  }
-}
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("myButton").addEventListener("click", errorTrigger.trigger);
+});
