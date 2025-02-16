@@ -24,8 +24,8 @@ module.exports = {
       release: releaseKey,
       /**
        * Custom collector endpoint for local development
-       * collectorEndpoint: 'http://localhost:3000/release',
-       */
+      */
+      // collectorEndpoint: 'http://localhost:3000/release',
     }),
     new webpack.DefinePlugin({
       'process.env.HAWK_TOKEN': JSON.stringify(process.env.HAWK_TOKEN),
