@@ -14,7 +14,6 @@ Then, get it in node process through the [dotenv](https://github.com/motdotla/do
 
 const path = require("path");
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const HawkWebpackPlugin = require("@hawk.so/webpack-plugin");
 
@@ -41,9 +40,6 @@ module.exports = {
     new HawkWebpackPlugin({
       integrationToken: process.env.HAWK_TOKEN,
       release: releaseKey,
-    }),
-    new HtmlWebpackPlugin({
-      template: "./index.html",
     }),
 
     /**

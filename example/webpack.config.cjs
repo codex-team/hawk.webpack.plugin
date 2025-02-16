@@ -24,8 +24,8 @@ module.exports = {
       release: releaseKey,
     }),
     new webpack.DefinePlugin({
-      'process.env.HAWK_TOKEN': JSON.stringify(process.env.HAWK_TOKEN),
-      'process.env.RELEASE': JSON.stringify(releaseKey),
+      'HAWK_TOKEN': JSON.stringify(process.env.HAWK_TOKEN),
+      'RELEASE': JSON.stringify(releaseKey),
     }),
   ],
   resolve: {
