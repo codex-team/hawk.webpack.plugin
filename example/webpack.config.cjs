@@ -43,5 +43,5 @@ module.exports = {
     compress: true,
     port: 9000,
   },
-  devtool: "hidden-source-map",
+  devtool: "source-map",
 };

@@ -55,7 +55,7 @@ module.exports = {
     minimize: true,
     minimizer: [new TerserPlugin()],
   },
-  devtool: "hidden-source-map",
+  devtool: "source-map",
 };
 
 ```
