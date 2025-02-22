@@ -11,7 +11,12 @@ yarn add @hawk.so/webpack-plugin --save-dev
 
 Next you need to connect plugin to the Webpack config.
 
-Pass your Integration Token as plugin option. It is useful to store it in .env file. 
+Pass your Integration Token as plugin option. It is useful to store it in .env file.
+
+> [!IMPORTANT]
+> Note, that devtool should be set to "source-map" for full source map content
+> That can cause your source code to be leaked if you set HawkWebpackPlugin.removeSourceMaps to false
+> But by default all of the source map files would be deleted after sending by the plugin 
 
 ```js
 const HawkWebpackPlugin = require('@hawk.so/webpack-plugin');
@@ -23,7 +28,7 @@ module.exports = {
       integrationToken: '' // Your project's Integration Token
     })
   ],
-  devtool: 'hidden-source-map',
+  devtool: 'source-map',
 }
 ```
 
