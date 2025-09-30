@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "repository": "https://github.com/codex-team/hawk.webpack.plugin.git",
   "author": "CodeX <team@codex.so>",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "private": false,
   "scripts": {
     "lint": "eslint src/ --ext .js --fix"
