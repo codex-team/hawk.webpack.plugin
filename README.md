@@ -54,3 +54,8 @@ See [example](/example) of connection.
 ## Usage in React project
 
 If you want to send source maps of your React project, you need to use [react-app-rewired](https://github.com/timarney/react-app-rewired) or do `yarn eject`. Then you can override Webpack config of your project and use this plugin.
+
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+See the [LICENSE](./LICENSE) file for the full text.
