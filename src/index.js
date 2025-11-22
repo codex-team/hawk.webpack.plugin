@@ -74,6 +74,11 @@ class HawkWebpackPlugin {
    * @param {Compiler} compiler
    */
   apply(compiler) {
+    // Add tracking marker to JS chunks before emitting
+    compiler.hooks.emit.tap('HawkWebpackPlugin', (compilation) => {
+      this.addTrackingMarker(compilation);
+    });
+
     compiler.hooks.afterEmit.tapPromise('HawkWebpackPlugin',
       /**
        * @param {Compilation} compilation
@@ -191,6 +196,39 @@ class HawkWebpackPlugin {
    */
   getReleaseId(compilation) {
     return compilation.hash;
+  }
+
+  /**
+   * Add tracking marker to JavaScript chunk files
+   *
+   * @param {Compilation} compilation
+   * @returns {void}
+   */
+  addTrackingMarker(compilation) {
+    const trackingMarker = '/*! HAWK:tracked */\n';
+    // JavaScript file extensions to track
+    const jsExtensions = ['js', 'mjs', 'cjs'];
+
+    Object.keys(compilation.assets).forEach((assetName) => {
+      // Filter only JS files (chunks) - includes files compiled from TypeScript
+      const filename = assetName.split('?')[0];
+      const extension = filename.split('.').pop();
+
+      if (jsExtensions.includes(extension) && !filename.endsWith('.map')) {
+        const asset = compilation.assets[assetName];
+        const source = asset.source();
+
+        // Check if marker already exists to avoid duplicates
+        if (!source.includes('HAWK:tracked')) {
+          // Prepend marker to the beginning of the file
+          const newSource = trackingMarker + source;
+          compilation.assets[assetName] = {
+            source: () => newSource,
+            size: () => newSource.length,
+          };
+        }
+      }
+    });
   }
 
   /**
