@@ -74,7 +74,9 @@ class HawkWebpackPlugin {
    * @param {Compiler} compiler
    */
   apply(compiler) {
-    // Add tracking marker to JS chunks before emitting
+    /**
+     * Add tracking marker to JS chunks before emitting
+     */
     compiler.hooks.emit.tap('HawkWebpackPlugin', (compilation) => {
       this.addTrackingMarker(compilation);
     });
@@ -218,10 +220,15 @@ class HawkWebpackPlugin {
         const asset = compilation.assets[assetName];
         const source = asset.source();
 
-        // Check if marker already exists to avoid duplicates
-        if (!source.includes('HAWK:tracked')) {
-          // Prepend marker to the beginning of the file
+        /**
+         * Check if marker already exists to avoid duplicates
+         */
+        if (!source.includes(trackingMarker)) {
+          /**
+           * Prepend marker to the beginning of the file
+           */
           const newSource = trackingMarker + source;
+
           compilation.assets[assetName] = {
             source: () => newSource,
             size: () => newSource.length,
