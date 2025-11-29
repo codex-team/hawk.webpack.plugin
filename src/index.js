@@ -208,11 +208,12 @@ class HawkWebpackPlugin {
    */
   addTrackingMarker(compilation) {
     const trackingMarker = '/*! HAWK:tracked */\n';
-    // JavaScript file extensions to track
     const jsExtensions = ['js', 'mjs', 'cjs'];
 
     Object.keys(compilation.assets).forEach((assetName) => {
-      // Filter only JS files (chunks) - includes files compiled from TypeScript
+      /**
+       * Filter only JS files (chunks) - includes files compiled from TypeScript
+       */
       const filename = assetName.split('?')[0];
       const extension = filename.split('.').pop();
 
