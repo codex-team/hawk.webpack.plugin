@@ -47,7 +47,7 @@ class HawkWebpackPlugin {
   }) {
     this.releaseId = release;
     this.releaseInfoFile = releaseInfoFile;
-    this.requestTimeout = 50;
+    this.requestTimeout = 5000;
     this.removeSourceMaps = removeSourceMaps;
 
     this.integrationToken = integrationToken;
@@ -344,19 +344,26 @@ class HawkWebpackPlugin {
           Authorization: `Bearer ${this.integrationToken}`,
           ...data.getHeaders(),
         },
-      }, (response) => {
+      });
+
+      request.on('response', (response) => {
+        let body = '';
         response.setEncoding('utf8');
-        response.on('data', (chunk) => {
-          resolve(chunk);
-        });
+        response.on('data', chunk => body += chunk);
+        response.on('end', () => resolve(body));
       });
 
-      request.on('error', (e) => {
-        reject(e);
-      });
+      request.on('error', reject);
 
-      request.write(data.getBuffer());
-      request.end();
+      data.getLength((err, length) => {
+        if (err) {
+          request.destroy(err);
+          return;
+        }
+
+        request.setHeader('Content-Length', length);
+        data.pipe(request);
+      });
     });
   }
 
