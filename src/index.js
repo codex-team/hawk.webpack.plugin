@@ -350,7 +350,19 @@ class HawkWebpackPlugin {
         let body = '';
         response.setEncoding('utf8');
         response.on('data', chunk => body += chunk);
-        response.on('end', () => resolve(body));
+        response.on('end', () => {
+          const statusCode = response.statusCode;
+
+          if (typeof statusCode === 'number' && statusCode >= 200 && statusCode < 300) {
+            resolve(body);
+          } else {
+            const error = new Error('Request failed with status code ' + statusCode);
+
+            error.statusCode = statusCode;
+            error.body = body;
+            reject(error);
+          }
+        });
       });
 
       request.on('error', reject);
