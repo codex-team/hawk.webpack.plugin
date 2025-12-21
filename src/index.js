@@ -370,6 +370,7 @@ class HawkWebpackPlugin {
       data.getLength((err, length) => {
         if (err) {
           request.destroy(err);
+          reject(err);
           return;
         }
 
