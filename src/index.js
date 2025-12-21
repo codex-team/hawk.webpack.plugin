@@ -47,7 +47,7 @@ class HawkWebpackPlugin {
   }) {
     this.releaseId = release;
     this.releaseInfoFile = releaseInfoFile;
-    this.requestTimeout = 50;
+    this.requestTimeout = 5000;
     this.removeSourceMaps = removeSourceMaps;
 
     this.integrationToken = integrationToken;
@@ -344,19 +344,39 @@ class HawkWebpackPlugin {
           Authorization: `Bearer ${this.integrationToken}`,
           ...data.getHeaders(),
         },
-      }, (response) => {
+      });
+
+      request.on('response', (response) => {
+        let body = '';
         response.setEncoding('utf8');
-        response.on('data', (chunk) => {
-          resolve(chunk);
+        response.on('data', chunk => body += chunk);
+        response.on('end', () => {
+          const statusCode = response.statusCode;
+
+          if (typeof statusCode === 'number' && statusCode >= 200 && statusCode < 300) {
+            resolve(body);
+          } else {
+            const error = new Error('Request failed with status code ' + statusCode);
+
+            error.statusCode = statusCode;
+            error.body = body;
+            reject(error);
+          }
         });
       });
 
-      request.on('error', (e) => {
-        reject(e);
-      });
+      request.on('error', reject);
 
-      request.write(data.getBuffer());
-      request.end();
+      data.getLength((err, length) => {
+        if (err) {
+          request.destroy(err);
+          reject(err);
+          return;
+        }
+
+        request.setHeader('Content-Length', length);
+        data.pipe(request);
+      });
     });
   }
 
